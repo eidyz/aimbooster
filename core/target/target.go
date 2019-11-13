@@ -58,18 +58,16 @@ func (target *Target) Draw(dst *ebiten.Image) {
 // CheckHit checks if target was clicked
 func (target *Target) CheckHit(dst *ebiten.Image) {
 	mouseX, mouseY := ebiten.CursorPosition()
-	if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
-		if float64(mouseX) >= Centerize(target.X, target.Size) &&
-			float64(mouseX) <= Centerize(target.X, target.Size)+target.Size &&
-			float64(mouseY) >= Centerize(target.Y, target.Size) &&
-			float64(mouseY) <= Centerize(target.Y, target.Size)+target.Size {
-			// DEBUG HITBOXES
-			/* ebitenutil.DrawRect(dst, Centerize(target.X, target.Size), Centerize(target.Y, target.Size), 2, 2, color.RGBA{255, 0, 0, 255})
-			ebitenutil.DrawRect(dst, Centerize(target.X, target.Size)+target.Size, Centerize(target.Y, target.Size), 2, 2, color.RGBA{255, 0, 0, 255})
-			ebitenutil.DrawRect(dst, Centerize(target.X, target.Size)+target.Size, Centerize(target.Y, target.Size)+target.Size, 2, 2, color.RGBA{255, 0, 0, 255})
-			ebitenutil.DrawRect(dst, Centerize(target.X, target.Size), Centerize(target.Y, target.Size)+target.Size, 2, 2, color.RGBA{255, 0, 0, 255}) */
-			target.Clicked = true
-		}
+	if float64(mouseX) >= Centerize(target.X, target.Size) &&
+		float64(mouseX) <= Centerize(target.X, target.Size)+target.Size &&
+		float64(mouseY) >= Centerize(target.Y, target.Size) &&
+		float64(mouseY) <= Centerize(target.Y, target.Size)+target.Size {
+		// DEBUG HITBOXES
+		/* ebitenutil.DrawRect(dst, Centerize(target.X, target.Size), Centerize(target.Y, target.Size), 2, 2, color.RGBA{255, 0, 0, 255})
+		ebitenutil.DrawRect(dst, Centerize(target.X, target.Size)+target.Size, Centerize(target.Y, target.Size), 2, 2, color.RGBA{255, 0, 0, 255})
+		ebitenutil.DrawRect(dst, Centerize(target.X, target.Size)+target.Size, Centerize(target.Y, target.Size)+target.Size, 2, 2, color.RGBA{255, 0, 0, 255})
+		ebitenutil.DrawRect(dst, Centerize(target.X, target.Size), Centerize(target.Y, target.Size)+target.Size, 2, 2, color.RGBA{255, 0, 0, 255}) */
+		target.Clicked = true
 	}
 }
 

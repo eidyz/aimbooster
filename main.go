@@ -1,11 +1,12 @@
 package main
 
 import (
-	"log"
 	"fmt"
-	"github.com/eidyz/aimbooster/util"
 	"image/color"
+	"log"
+	"time"
 
+	throttle "github.com/boz/go-throttle"
 	"github.com/eidyz/aimbooster/core/target"
 	"github.com/hajimehoshi/ebiten"
 	"github.com/hajimehoshi/ebiten/ebitenutil"
@@ -21,15 +22,27 @@ const ResY = 600
 var Score = 0
 var targets = []target.Target{}
 
+var mousePressed = ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft)
+var mousePressedLastTick = mousePressed
+
+var addTarget = throttle.ThrottleFunc(time.Duration(500)*time.Millisecond, false, func() {
+	targets = append(targets, target.Init())
+})
+
 func update(screen *ebiten.Image) error {
 	if ebiten.IsDrawingSkipped() {
 		return nil
 	}
+	mousePressedLastTick = mousePressed
+	mousePressed = ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft)
 	screen.Fill(color.White)
+
 	if len(targets) > 0 {
 		for i := 0; i < len(targets); i++ {
 			targets[i].Draw(screen)
-			targets[i].CheckHit(screen)
+			if mousePressed && !mousePressedLastTick {
+				targets[i].CheckHit(screen)
+			}
 			targets[i].Pulse()
 
 			if targets[i].Size <= 0 || targets[i].Clicked {
@@ -38,23 +51,22 @@ func update(screen *ebiten.Image) error {
 				} else if targets[i].Size <= 0 {
 					Score--
 				}
-				log.Print(Score)
 				targets = append(targets[:i], targets[i+1:]...)
 				i--
 			}
 		}
 	}
-	ebitenutil.DebugPrint(screen, func() string{
+	ebitenutil.DebugPrint(screen, func() string {
 		return fmt.Sprintf("%s%d", "Your Score: ", Score)
 	}())
+
+	addTarget.Trigger()
+
 	return nil
 }
 
 func main() {
 	targets = append(targets, target.Init())
-	util.SetInterval(func() {
-		targets = append(targets, target.Init())
-	}, 500, false)
 	if err := ebiten.Run(update, ResX, ResY, 1, "Go Aimbooster"); err != nil {
 		log.Fatal(err)
 	}
