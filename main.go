@@ -2,12 +2,13 @@ package main
 
 import (
 	"log"
-
+	"fmt"
 	"github.com/eidyz/aimbooster/util"
 	"image/color"
 
 	"github.com/eidyz/aimbooster/core/target"
 	"github.com/hajimehoshi/ebiten"
+	"github.com/hajimehoshi/ebiten/ebitenutil"
 )
 
 //ResX ---
@@ -31,18 +32,21 @@ func update(screen *ebiten.Image) error {
 			targets[i].CheckHit(screen)
 			targets[i].Pulse()
 
-			if targets[i].Size <= 0 {
-				targets = append(targets[:i], targets[i+1:]...)
-				i--
-			}
-
-			if targets[i].Clicked {
+			if targets[i].Size <= 0 || targets[i].Clicked {
+				if targets[i].Clicked {
+					Score++
+				} else if targets[i].Size <= 0 {
+					Score--
+				}
+				log.Print(Score)
 				targets = append(targets[:i], targets[i+1:]...)
 				i--
 			}
 		}
 	}
-
+	ebitenutil.DebugPrint(screen, func() string{
+		return fmt.Sprintf("%s%d", "Your Score: ", Score)
+	}())
 	return nil
 }
 
