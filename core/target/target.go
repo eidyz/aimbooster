@@ -8,12 +8,6 @@ import (
 	"github.com/hajimehoshi/ebiten/ebitenutil"
 )
 
-//ResX ---
-const ResX = 800
-
-// ResY ---
-const ResY = 600
-
 // Target ---
 type Target struct {
 	X       float64
@@ -44,9 +38,10 @@ func New(x, y, size float64, speed int) (target Target) {
 
 // NewRandom ---
 func NewRandom() (target Target) {
+	w, h := ebiten.ScreenSizeInFullscreen()
 	var size float64 = 1
-	x := float64(util.RandInt(0, ResX-150))
-	y := float64(util.RandInt(0, ResY-150))
+	x := float64(util.RandInt(0, w-150))
+	y := float64(util.RandInt(0, h-150))
 	return New(x, y, size, 500)
 }
 
@@ -62,11 +57,6 @@ func (target *Target) CheckHit(dst *ebiten.Image) {
 		float64(mouseX) <= Centerize(target.X, target.Size)+target.Size &&
 		float64(mouseY) >= Centerize(target.Y, target.Size) &&
 		float64(mouseY) <= Centerize(target.Y, target.Size)+target.Size {
-		// DEBUG HITBOXES
-		/* ebitenutil.DrawRect(dst, Centerize(target.X, target.Size), Centerize(target.Y, target.Size), 2, 2, color.RGBA{255, 0, 0, 255})
-		ebitenutil.DrawRect(dst, Centerize(target.X, target.Size)+target.Size, Centerize(target.Y, target.Size), 2, 2, color.RGBA{255, 0, 0, 255})
-		ebitenutil.DrawRect(dst, Centerize(target.X, target.Size)+target.Size, Centerize(target.Y, target.Size)+target.Size, 2, 2, color.RGBA{255, 0, 0, 255})
-		ebitenutil.DrawRect(dst, Centerize(target.X, target.Size), Centerize(target.Y, target.Size)+target.Size, 2, 2, color.RGBA{255, 0, 0, 255}) */
 		target.Clicked = true
 	}
 }

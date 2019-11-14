@@ -13,12 +13,6 @@ import (
 	"github.com/hajimehoshi/ebiten/inpututil"
 )
 
-//ResX ---
-const ResX = 800
-
-// ResY ---
-const ResY = 600
-
 // Misses variable
 var Misses = 0
 var targets = []target.Target{}
@@ -33,8 +27,6 @@ func update(screen *ebiten.Image) error {
 	if ebiten.IsDrawingSkipped() {
 		return nil
 	}
-
-	log.Println(Misses)
 
 	if Misses >= 3 {
 		log.Fatalln("You lasted ", time.Since(startTime), " seconds")
@@ -77,7 +69,9 @@ func update(screen *ebiten.Image) error {
 
 func main() {
 	targets = append(targets, target.Init())
-	if err := ebiten.Run(update, ResX, ResY, 1, "Go Aimbooster"); err != nil {
+	w, h := ebiten.ScreenSizeInFullscreen()
+	ebiten.SetFullscreen(true)
+	if err := ebiten.Run(update, w, h, 1, "Go Aimbooster"); err != nil {
 		log.Fatal(err)
 	}
 }
