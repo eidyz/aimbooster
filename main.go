@@ -10,6 +10,7 @@ import (
 	"github.com/eidyz/aimbooster/core/target"
 	"github.com/hajimehoshi/ebiten"
 	"github.com/hajimehoshi/ebiten/ebitenutil"
+	"github.com/hajimehoshi/ebiten/inpututil"
 )
 
 //ResX ---
@@ -22,9 +23,6 @@ const ResY = 600
 var Score = 0
 var targets = []target.Target{}
 
-var mousePressed = ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft)
-var mousePressedLastTick = mousePressed
-
 var addTarget = throttle.ThrottleFunc(time.Duration(500)*time.Millisecond, false, func() {
 	targets = append(targets, target.Init())
 })
@@ -33,14 +31,15 @@ func update(screen *ebiten.Image) error {
 	if ebiten.IsDrawingSkipped() {
 		return nil
 	}
-	mousePressedLastTick = mousePressed
-	mousePressed = ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft)
-	screen.Fill(color.White)
+	err := screen.Fill(color.White)
+	if err != nil {
+		log.Panic(err)
+	}
 
 	if len(targets) > 0 {
 		for i := 0; i < len(targets); i++ {
 			targets[i].Draw(screen)
-			if mousePressed && !mousePressedLastTick {
+			if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
 				targets[i].CheckHit(screen)
 			}
 			targets[i].Pulse()
