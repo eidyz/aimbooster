@@ -19,11 +19,13 @@ const ResX = 800
 // ResY ---
 const ResY = 600
 
-// Score variable
-var Score = 0
+// Misses variable
+var Misses = 0
 var targets = []target.Target{}
 
-var addTarget = throttle.ThrottleFunc(time.Duration(500)*time.Millisecond, false, func() {
+var startTime = time.Now()
+
+var addTarget = throttle.ThrottleFunc(time.Duration(1000)*time.Millisecond, false, func() {
 	targets = append(targets, target.Init())
 })
 
@@ -31,7 +33,15 @@ func update(screen *ebiten.Image) error {
 	if ebiten.IsDrawingSkipped() {
 		return nil
 	}
+
+	log.Println(Misses)
+
+	if Misses >= 3 {
+		log.Fatalln("You lasted ", time.Since(startTime), " seconds")
+	}
+
 	err := screen.Fill(color.White)
+
 	if err != nil {
 		log.Panic(err)
 	}
@@ -45,22 +55,23 @@ func update(screen *ebiten.Image) error {
 			targets[i].Pulse()
 
 			if targets[i].Size <= 0 || targets[i].Clicked {
-				if targets[i].Clicked {
-					Score++
-				} else if targets[i].Size <= 0 {
-					Score--
+				if targets[i].Size <= 0 {
+					Misses++
 				}
 				targets = append(targets[:i], targets[i+1:]...)
 				i--
 			}
 		}
 	}
+
 	ebitenutil.DebugPrint(screen, func() string {
-		return fmt.Sprintf("%s%d", "Your Score: ", Score)
+		return fmt.Sprintf("%s%d", "Score: ", int(time.Since(startTime).Seconds()))
 	}())
 
-	addTarget.Trigger()
-
+	maxTargets := int(time.Since(startTime).Milliseconds()/1000) / 13
+	if len(targets) <= maxTargets {
+		targets = append(targets, target.Init())
+	}
 	return nil
 }
 

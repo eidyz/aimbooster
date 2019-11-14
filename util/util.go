@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-//SetInterval Sets async interval
+// SetInterval Sets async interval
 func SetInterval(someFunc func(), milliseconds int, async bool) chan bool {
 
 	// How often to fire the passed in function
@@ -42,6 +42,16 @@ func SetInterval(someFunc func(), milliseconds int, async bool) chan bool {
 	// We return the channel so we can pass in
 	// a value to it to clear the interval
 	return clear
+}
+
+// SetTimeout ---
+func SetTimeout(someFunc func(), milliseconds int) {
+
+	timeout := time.Duration(milliseconds) * time.Millisecond
+
+	// This spawns a goroutine and therefore does not block
+	time.AfterFunc(timeout, someFunc)
+
 }
 
 // RandInt generates random Float64 in range
